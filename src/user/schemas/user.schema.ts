@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { DailyActivities } from './daily-activities.schema';
 import { Achievements } from './achievements.schema';
+import { JournalEntry } from './journal-entry.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -11,24 +11,27 @@ export class User {
   name: string;
 
   @Prop({ required: true })
-  mail: string;
+  email: string;
 
   @Prop({ required: true })
-  points: number;
+  profileUri: string;
 
-  @Prop([
-    {
-      type: DailyActivities,
-      required: true,
-    },
-  ])
-  daily_activities: DailyActivities[];
+  @Prop({ required: true })
+  pronouns: string[];
 
-  @Prop([
-    {
-      type: Achievements,
-    },
-  ])
+  @Prop({ required: true })
+  lenguagePreference: string;
+
+  @Prop({ required: true })
+  birthDate: string;
+
+  @Prop()
+  journal_entries: JournalEntry[];
+
+  @Prop()
+  music_genres: string[];
+
+  @Prop()
   achievements: Achievements[];
 }
 
