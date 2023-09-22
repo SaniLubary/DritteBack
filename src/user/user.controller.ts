@@ -31,6 +31,10 @@ export class UserController {
 
   @Put(':email')
   update(@Param('email') email: string, @Body() user: CreateUserDto) {
+    // TODO: make lenguagePreference come as a string instead
+    if (typeof user.lenguagePreference !== 'string') {
+      user.lenguagePreference = user.lenguagePreference[0];
+    }
     return this.userService.update(email, user);
   }
 }
