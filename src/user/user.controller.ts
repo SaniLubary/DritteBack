@@ -5,23 +5,20 @@ import {
   Param,
   Post,
   Put,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { Request } from 'express';
-import { UserPayload } from './dto/user-payload.dto';
 
 @Controller('user')
 @UseGuards(AuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  findOne(@Req() req: Request & { user: UserPayload }) {
-    return this.userService.findOne(req.user.email);
+  @Get(':email')
+  findOne(@Param('email') email: string) {
+    return this.userService.findOne(email);
   }
 
   @Post()
@@ -31,10 +28,6 @@ export class UserController {
 
   @Put(':email')
   update(@Param('email') email: string, @Body() user: CreateUserDto) {
-    // TODO: make lenguagePreference come as a string instead
-    if (typeof user.lenguagePreference !== 'string') {
-      user.lenguagePreference = user.lenguagePreference[0];
-    }
     return this.userService.update(email, user);
   }
 }

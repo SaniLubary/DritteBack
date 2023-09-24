@@ -7,32 +7,29 @@ export type UserDocument = HydratedDocument<User>;
 
 @Schema({ timestamps: true })
 export class User {
-  @Prop({ required: true })
+  @Prop({ required: false })
   name: string;
 
   @Prop({ required: true })
   email: string;
 
   @Prop({ required: true })
-  profileUri: string;
+  profile_uri: string;
 
-  @Prop({ required: true })
-  pronouns: string[];
+  @Prop({ required: false })
+  lenguage_preference: string;
 
-  @Prop({ required: true })
-  lenguagePreference: string;
-
-  @Prop({ required: true })
-  birthDate: string;
+  @Prop({ required: false })
+  birth_date: Date;
 
   @Prop()
-  journal_entries: JournalEntry[];
+  journal_entries?: JournalEntry[];
 
   @Prop()
   music_genres: string[];
 
   @Prop()
-  achievements: Achievements[];
+  achievements?: Achievements[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
