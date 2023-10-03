@@ -28,7 +28,7 @@ export class AuthService {
       });
       return payload;
     } catch (err) {
-      console.log(err);
+      console.log('Error in verify token', err);
       return null;
     }
   }

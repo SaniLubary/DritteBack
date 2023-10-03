@@ -45,7 +45,7 @@ export class UserService implements OnModuleInit {
       }
       return createdUser;
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error('Some error occurred: ', error);
     }
   }
 
@@ -53,17 +53,22 @@ export class UserService implements OnModuleInit {
     try {
       const users: User[] = await this.userModel.find({ email: email }).exec();
       console.log('User found', users);
-      const user: CreateUserDto = {
-        achievements: users[0].achievements,
-        birthDate: users[0].birth_date,
-        email: users[0].email,
-        lenguagePreference: users[0].lenguage_preference,
-        name: users[0].name,
-        profileUri: users[0].profile_uri,
-        journalEntries: users[0].journal_entries,
-        musicGenres: users[0].music_genres,
-      };
-      return user;
+      if (users.length > 0) {
+        const user: CreateUserDto = {
+          achievements: users[0].achievements,
+          birthDate: users[0].birth_date,
+          email: users[0].email,
+          lenguagePreference: users[0].lenguage_preference,
+          name: users[0].name,
+          profileUri: users[0].profile_uri,
+          journalEntries: users[0].journal_entries,
+          musicGenres: users[0].music_genres,
+        };
+        return user;
+      } else {
+        console.log('User not found with mail: ', email);
+        return null;
+      }
     } catch (error) {
       console.log('Error trying to find user', error);
     }
@@ -87,6 +92,10 @@ export class UserService implements OnModuleInit {
       profile_uri: user.profileUri,
     };
 
-    return await this.userModel.findOneAndUpdate({ email: email }, newUser);
+    try {
+      return await this.userModel.findOneAndUpdate({ email: email }, newUser);
+    } catch (error) {
+      console.log('Error updating user', error);
+    }
   }
 }
