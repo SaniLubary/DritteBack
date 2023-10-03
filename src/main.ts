@@ -12,6 +12,10 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
   await app.listen(3000);
-  new Logger('Network access address').log(networkInterfaces().en0[1].address);
+  new Logger('Network access address').log(
+    networkInterfaces().en0
+      ? networkInterfaces().en0[1].address
+      : networkInterfaces()['Wi-Fi'][1].address,
+  );
 }
 bootstrap();
