@@ -14,19 +14,19 @@ export class User {
   email: string;
 
   @Prop({ required: true })
-  profile_uri: string;
+  profileUri: string;
 
   @Prop({ required: false })
-  lenguage_preference: string;
+  lenguagePreference: string;
 
   @Prop({ required: false })
-  birth_date: Date;
+  birthDate: Date;
 
   @Prop()
-  journal_entries?: JournalEntry[];
+  journalEntries?: JournalEntry[];
 
   @Prop()
-  music_genres: string[];
+  musicGenres: string[];
 
   @Prop()
   achievements?: Achievements[];

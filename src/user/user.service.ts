@@ -27,17 +27,7 @@ export class UserService implements OnModuleInit {
 
   async create(user: CreateUserDto): Promise<User> {
     try {
-      const newUser: User = {
-        birth_date: user.birthDate,
-        email: user.email,
-        lenguage_preference: user.lenguagePreference,
-        music_genres: user.musicGenres,
-        name: user.name,
-        profile_uri: user.profileUri,
-        achievements: user.achievements,
-      };
-
-      const createdUser = await this.userModel.create(newUser);
+      const createdUser = await this.userModel.create(user);
       if (createdUser) {
         this.logger.log(`User ${createdUser} created`);
       } else {
@@ -49,22 +39,12 @@ export class UserService implements OnModuleInit {
     }
   }
 
-  async findOne(email: string): Promise<CreateUserDto> {
+  async findOne(email: string): Promise<User> {
     try {
       const users: User[] = await this.userModel.find({ email: email }).exec();
       console.log('User found', users);
       if (users.length > 0) {
-        const user: CreateUserDto = {
-          achievements: users[0].achievements,
-          birthDate: users[0].birth_date,
-          email: users[0].email,
-          lenguagePreference: users[0].lenguage_preference,
-          name: users[0].name,
-          profileUri: users[0].profile_uri,
-          journalEntries: users[0].journal_entries,
-          musicGenres: users[0].music_genres,
-        };
-        return user;
+        return users[0];
       } else {
         console.log('User not found with mail: ', email);
         return null;
@@ -80,20 +60,9 @@ export class UserService implements OnModuleInit {
       user.lenguagePreference = user.lenguagePreference[0];
     }
 
-    const newUser: User = {
-      email: user.email,
-      birth_date: user.birthDate,
-      name: user.name,
-      lenguage_preference:
-        typeof user.lenguagePreference === 'string'
-          ? user.lenguagePreference
-          : user.lenguagePreference[0],
-      music_genres: user.musicGenres,
-      profile_uri: user.profileUri,
-    };
-
     try {
-      return await this.userModel.findOneAndUpdate({ email: email }, newUser);
+      await this.userModel.findOneAndUpdate({ email: email }, user);
+      return this.findOne(user.email);
     } catch (error) {
       console.log('Error updating user', error);
     }
