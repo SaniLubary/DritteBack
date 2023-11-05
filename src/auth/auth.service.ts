@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as jwt from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
@@ -11,7 +11,30 @@ export class AuthService {
     this.domain = configService.get<string>('AUTH0_DOMAIN');
   }
 
+  async getUser(token: string) {
+    if (!token) {
+      console.log('No authorization header was specified');
+      return false;
+    }
+
+    try {
+      const user = await this.verifyToken(token);
+      return user;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
+    }
+  }
+
+  removeBearerPrefix(token) {
+    if (token && token.startsWith('Bearer ')) {
+      return token.substring(7);
+    }
+    return token;
+  }
+
   async verifyToken(token: string): Promise<any> {
+    token = this.removeBearerPrefix(token);
+    console.log('Verifying token token', token);
     try {
       const jwtHeader = JSON.parse(
         Buffer.from(token.split('.')[0], 'base64').toString(),
@@ -29,7 +52,7 @@ export class AuthService {
       return payload;
     } catch (err) {
       console.log('Error in verify token', err);
-      return null;
+      throw err;
     }
   }
 }

@@ -9,17 +9,26 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = request.headers.authorization?.replace('Bearer ', '');
 
-    if (!token) {
-      return false;
-    }
-
-    const user = await this.authService.verifyToken(token);
+    const user = await this.authService.getUser(token);
 
     if (!user) {
+      console.log('User not found');
       return false;
     }
 
-    request.user = user;
+    if (
+      'email' in request.params &&
+      user.email &&
+      request.params.email !== user.email
+    ) {
+      console.error(
+        'Signed in user and email trying to perform actions on does not match',
+        request.params,
+        user.mail,
+      );
+      return false;
+    }
+
     console.log(user);
     return true;
   }

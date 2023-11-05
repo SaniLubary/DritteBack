@@ -15,7 +15,9 @@ async function bootstrap() {
   new Logger('Network access address').log(
     networkInterfaces().en0
       ? networkInterfaces().en0[1].address
-      : networkInterfaces()['Wi-Fi'][1].address,
+      : networkInterfaces()?.['Wi-Fi']
+      ? networkInterfaces()['Wi-Fi'][1].address
+      : networkInterfaces(),
   );
 }
 bootstrap();

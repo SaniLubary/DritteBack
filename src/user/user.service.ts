@@ -1,29 +1,13 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
-export class UserService implements OnModuleInit {
+export class UserService {
   private logger = new Logger(UserService.name);
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
-
-  onModuleInit() {
-    // this._mockAUser();
-  }
-
-  _mockAUser() {
-    this.create({
-      name: 'Santi',
-      email: 'santiago.lp.cop@gmail.com',
-      achievements: [{ name: 'SuperCool' }],
-      birthDate: new Date('2000-01-01'),
-      lenguagePreference: 'spanish',
-      profileUri:
-        'https://cdn.pixabay.com/photo/2017/11/10/05/48/user-2935527_960_720.png',
-    });
-  }
 
   async create(user: CreateUserDto): Promise<User> {
     try {

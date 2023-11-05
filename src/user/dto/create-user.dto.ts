@@ -1,5 +1,3 @@
-import { JournalEntry } from '../schemas/journal-entry.schema';
-
 class AchievementsDto {
   name: string;
 }
@@ -11,6 +9,5 @@ export class CreateUserDto {
   lenguagePreference: string;
   birthDate: Date;
   musicGenres?: string[];
-  journalEntries?: JournalEntry[];
   achievements: AchievementsDto[];
 }

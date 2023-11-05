@@ -22,8 +22,9 @@ export class UserController {
   }
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  create(@Body() user: CreateUserDto) {
+    console.log('User data to create new user', user);
+    return this.userService.create(user);
   }
 
   @Put(':email')
