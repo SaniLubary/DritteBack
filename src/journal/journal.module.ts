@@ -15,5 +15,6 @@ import { AuthService } from 'src/auth/auth.service';
   ],
   controllers: [JournalController],
   providers: [JournalService, EncryptionService, UserService, AuthService],
+  exports: [JournalService, EncryptionService, UserService, AuthService],
 })
 export class JournalModule {}

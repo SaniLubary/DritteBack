@@ -20,6 +20,15 @@ export class Journal {
   emotion: string;
 
   @Prop({ required: false })
+  question: string;
+
+  @Prop({ required: false })
+  response: string;
+
+  @Prop({ required: false })
+  reminded: boolean;
+
+  @Prop({ required: false })
   createdAt: Date;
 }
 

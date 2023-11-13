@@ -5,6 +5,7 @@ class AchievementsDto {
 export class CreateUserDto {
   name: string;
   email: string;
+  deviceTokens: string[];
   profileUri: string;
   lenguagePreference: string;
   birthDate: Date;

@@ -19,7 +19,7 @@ export class UserService {
       }
       return createdUser;
     } catch (error) {
-      this.logger.error('Some error occurred: ', error);
+      this.logger.error(`Some error occurred: ${error}`);
     }
   }
 
@@ -31,6 +31,21 @@ export class UserService {
         return users[0];
       } else {
         console.log('User not found with mail: ', email);
+        return null;
+      }
+    } catch (error) {
+      console.log('Error trying to find user', error);
+    }
+  }
+
+  async findById(_id: string): Promise<User> {
+    try {
+      const users: User[] = await this.userModel.find({ _id }).exec();
+      console.log('User found', users);
+      if (users.length > 0) {
+        return users[0];
+      } else {
+        console.log('User not found with id: ', _id);
         return null;
       }
     } catch (error) {

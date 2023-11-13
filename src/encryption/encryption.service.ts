@@ -22,7 +22,6 @@ export class EncryptionService {
   }
 
   decrypt(text: string): string {
-    console.log('decrhypt', text);
     const [ivHex, encryptedHex] = text.split(':');
     const iv = Buffer.from(ivHex, 'hex');
     const decipher = crypto.createDecipheriv(
@@ -32,7 +31,6 @@ export class EncryptionService {
     );
     let decrypted = decipher.update(encryptedHex, 'hex', 'utf-8');
     decrypted += decipher.final('utf-8');
-    console.log('decrypted', decrypted);
     return decrypted;
   }
 }

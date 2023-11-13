@@ -52,6 +52,53 @@ export class JournalService {
       });
   }
 
+  async findByHoursAgo(hoursAgo: Date): Promise<Journal[]> {
+    return await this.journalModel
+      .find({
+        createdAt: { $lt: hoursAgo },
+        $or: [{ reminded: { $exists: false } }, { reminded: { $eq: false } }],
+      })
+      .lean()
+      .then((journals): Journal[] => {
+        const decryptedJournals = journals.map((journal: Journal): Journal => {
+          return this.decrypttJournal(journal);
+        });
+        return decryptedJournals;
+      })
+      .catch((error) => {
+        console.log('Error finding or decrypting Journals', error);
+        return [];
+      });
+  }
+
+  private decrypttJournal(journal: Journal): Journal {
+    return {
+      _id: journal._id,
+      userId: journal.userId,
+      title: this.encryptionService.decrypt(journal.title),
+      description: this.encryptionService.decrypt(journal.description),
+      emotion: this.encryptionService.decrypt(journal.emotion),
+      question:
+        journal.question && this.encryptionService.decrypt(journal.question),
+      response:
+        journal.response && this.encryptionService.decrypt(journal.response),
+      reminded: journal.reminded,
+      createdAt: journal.createdAt,
+    };
+  }
+
+  async findById(id: string): Promise<Journal> {
+    return await this.journalModel
+      .find({ _id: id })
+      .lean()
+      .then((journals): Journal => {
+        const decryptedJournal = journals.map(
+          (journal: Journal): Journal => this.decrypttJournal(journal),
+        );
+        return decryptedJournal[0];
+      });
+  }
+
   async findAll(email: string): Promise<Journal[]> {
     return await this.userService
       .findOne(email)
@@ -62,16 +109,9 @@ export class JournalService {
           .then((journals): Journal[] => {
             console.log('journals before decrypt', journals);
             const decryptedJournals = journals.map(
-              (journal: Journal): Journal => ({
-                _id: journal._id,
-                userId: journal.userId,
-                title: this.encryptionService.decrypt(journal.title),
-                description: this.encryptionService.decrypt(
-                  journal.description,
-                ),
-                emotion: this.encryptionService.decrypt(journal.emotion),
-                createdAt: journal.createdAt,
-              }),
+              (journal: Journal): Journal => {
+                return this.decrypttJournal(journal);
+              },
             );
             console.log('journals', decryptedJournals);
             return decryptedJournals;
@@ -87,19 +127,46 @@ export class JournalService {
       });
   }
 
-  createJournal(journal: CreateJournalDto): void {
+  private searchByIdOrOtherData(journal, user) {
+    return journal._id
+      ? { _id: journal._id }
+      : {
+          userId: user._id,
+          title: this.encryptionService.encrypt(journal.title),
+          description: this.encryptionService.encrypt(journal.description),
+          emotion: this.encryptionService.encrypt(journal.emotion),
+        };
+  }
+
+  async upsertJournal(journal: CreateJournalDto): Promise<Journal> {
     try {
-      this.userService.findOne(journal.userEmail).then((user) => {
-        delete journal.userEmail;
-        this.journalModel
-          .create({
-            ...journal,
-            userId: user._id,
-            title: this.encryptionService.encrypt(journal.title),
-            description: this.encryptionService.encrypt(journal.description),
-            emotion: this.encryptionService.encrypt(journal.emotion),
-          })
-          .then((journal) => console.log('Journal created', journal));
+      return this.userService.findOne(journal.userEmail).then(async (user) => {
+        console.log('journalllll', journal);
+        const journalToUpsert = {
+          _id: journal._id,
+          userId: user._id,
+          title: this.encryptionService.encrypt(journal.title),
+          description: this.encryptionService.encrypt(journal.description),
+          emotion: this.encryptionService.encrypt(journal.emotion),
+          question:
+            journal.question &&
+            this.encryptionService.encrypt(journal.question),
+          response:
+            journal.response &&
+            this.encryptionService.encrypt(journal.response),
+          reminded: journal?.reminded,
+        };
+
+        if (!journal) {
+          throw new Error('No journal sent to save');
+        }
+
+        const newJournal = await this.journalModel.findOneAndUpdate(
+          this.searchByIdOrOtherData(journalToUpsert, user),
+          journalToUpsert,
+          { upsert: true, returnDocument: 'after' },
+        );
+        return newJournal;
       });
     } catch (error) {
       console.log('Error creating journal', error);

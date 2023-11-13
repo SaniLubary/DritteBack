@@ -5,9 +5,14 @@ import { UserModule } from './user/user.module';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { JournalModule } from './journal/journal.module';
+import { SendRetrospectiveReminderService } from './cron/send-retrospective-reminder.service';
+import { ScheduleModule } from '@nestjs/schedule';
+import { FirebaseModule } from './firebase/firebase.module';
+import { CronModule } from './cron/cron.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.development.env',
@@ -20,10 +25,13 @@ import { JournalModule } from './journal/journal.module';
       }),
       inject: [ConfigService],
     }),
+    FirebaseModule.configure(),
     AuthModule,
     UserModule,
     JournalModule,
+    CronModule,
   ],
+  providers: [SendRetrospectiveReminderService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
