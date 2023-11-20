@@ -5,18 +5,21 @@ import {
   Param,
   Post,
   Put,
+  UseFilters,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 
 @Controller('user')
 @UseGuards(AuthGuard)
+@UseFilters(HttpExceptionFilter)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get(':email')
+  @Get()
   findOne(@Param('email') email: string) {
     return this.userService.findOne(email);
   }
@@ -27,7 +30,7 @@ export class UserController {
     return this.userService.create(user);
   }
 
-  @Put(':email')
+  @Put()
   update(@Param('email') email: string, @Body() user: CreateUserDto) {
     return this.userService.update(email, user);
   }

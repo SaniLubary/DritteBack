@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, ObjectId } from 'mongoose';
-import { Achievements } from './achievements.schema';
+import { UserAchievement, UserAchievementSchema } from './achievements.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -29,8 +29,12 @@ export class User {
   @Prop({ required: false })
   musicGenres: string[];
 
-  @Prop({ required: false })
-  achievements?: Achievements[];
+  @Prop({
+    required: true,
+    default: [],
+    type: [UserAchievementSchema],
+  })
+  achievements: UserAchievement[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

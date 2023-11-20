@@ -1,5 +1,9 @@
+import { ObjectId } from 'mongoose';
+
 class AchievementsDto {
-  name: string;
+  achievementId: ObjectId;
+  notified: boolean;
+  dateWon: Date;
 }
 
 export class CreateUserDto {

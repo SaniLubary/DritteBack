@@ -9,6 +9,7 @@ import { SendRetrospectiveReminderService } from './cron/send-retrospective-remi
 import { ScheduleModule } from '@nestjs/schedule';
 import { FirebaseModule } from './firebase/firebase.module';
 import { CronModule } from './cron/cron.module';
+import { AchievementModule } from './achievement/achievement.module';
 
 @Module({
   imports: [
@@ -27,8 +28,9 @@ import { CronModule } from './cron/cron.module';
     }),
     FirebaseModule.configure(),
     AuthModule,
-    UserModule,
     JournalModule,
+    AchievementModule,
+    UserModule,
     CronModule,
   ],
   providers: [SendRetrospectiveReminderService],

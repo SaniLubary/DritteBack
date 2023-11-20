@@ -1,12 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument, ObjectId } from 'mongoose';
 
-export type AchievementsDocument = HydratedDocument<Achievements>;
+export type UserAchievementDocument = HydratedDocument<UserAchievement>;
 
 @Schema({ timestamps: true })
-export class Achievements {
-  @Prop({ required: true })
-  name: string;
+export class UserAchievement {
+  @Prop({ required: true, type: mongoose.Schema.Types.ObjectId })
+  achievementId: ObjectId;
+
+  @Prop({ required: true, type: Boolean })
+  notified: boolean;
+
+  @Prop({ required: true, type: Date })
+  dateWon: Date;
 }
 
-export const AchievementsSchema = SchemaFactory.createForClass(Achievements);
+export const UserAchievementSchema =
+  SchemaFactory.createForClass(UserAchievement);

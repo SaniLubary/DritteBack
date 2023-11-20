@@ -16,20 +16,7 @@ export class AuthGuard implements CanActivate {
       return false;
     }
 
-    if (
-      'email' in request.params &&
-      user.email &&
-      request.params.email !== user.email
-    ) {
-      console.error(
-        'Signed in user and email trying to perform actions on does not match',
-        request.params,
-        user.mail,
-      );
-      return false;
-    }
-
-    console.log(user);
+    request.params['email'] = user.email;
     return true;
   }
 }

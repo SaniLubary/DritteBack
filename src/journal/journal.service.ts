@@ -107,13 +107,11 @@ export class JournalService {
           .find({ userId: user._id })
           .exec()
           .then((journals): Journal[] => {
-            console.log('journals before decrypt', journals);
             const decryptedJournals = journals.map(
               (journal: Journal): Journal => {
                 return this.decrypttJournal(journal);
               },
             );
-            console.log('journals', decryptedJournals);
             return decryptedJournals;
           })
           .catch((error) => {
@@ -141,7 +139,6 @@ export class JournalService {
   async upsertJournal(journal: CreateJournalDto): Promise<Journal> {
     try {
       return this.userService.findOne(journal.userEmail).then(async (user) => {
-        console.log('journalllll', journal);
         const journalToUpsert = {
           _id: journal._id,
           userId: user._id,

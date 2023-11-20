@@ -34,7 +34,6 @@ export class AuthService {
 
   async verifyToken(token: string): Promise<any> {
     token = this.removeBearerPrefix(token);
-    console.log('Verifying token token', token);
     try {
       const jwtHeader = JSON.parse(
         Buffer.from(token.split('.')[0], 'base64').toString(),

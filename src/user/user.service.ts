@@ -25,14 +25,11 @@ export class UserService {
 
   async findOne(email: string): Promise<User> {
     try {
-      const users: User[] = await this.userModel.find({ email: email }).exec();
-      console.log('User found', users);
-      if (users.length > 0) {
-        return users[0];
-      } else {
-        console.log('User not found with mail: ', email);
-        return null;
-      }
+      const user: User = await this.userModel
+        .findOne({ email: email })
+        .populate('achievements')
+        .exec();
+      return user;
     } catch (error) {
       console.log('Error trying to find user', error);
     }
@@ -40,8 +37,10 @@ export class UserService {
 
   async findById(_id: string): Promise<User> {
     try {
-      const users: User[] = await this.userModel.find({ _id }).exec();
-      console.log('User found', users);
+      const users: User[] = await this.userModel
+        .find({ _id })
+        .populate('achievements')
+        .exec();
       if (users.length > 0) {
         return users[0];
       } else {
@@ -54,14 +53,14 @@ export class UserService {
   }
 
   async update(email: string, user: CreateUserDto): Promise<User> {
-    console.log('Updateing User with: ', user);
     if (typeof user.lenguagePreference !== 'string') {
       user.lenguagePreference = user.lenguagePreference[0];
     }
 
     try {
-      await this.userModel.findOneAndUpdate({ email: email }, user);
-      return this.findOne(user.email);
+      return this.userModel.findOneAndUpdate({ email }, user, {
+        returnDocument: 'after',
+      });
     } catch (error) {
       console.log('Error updating user', error);
     }

@@ -1,10 +1,20 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  UseFilters,
+  UseGuards,
+} from '@nestjs/common';
 import { JournalFeedbackReturn, JournalService } from './journal.service';
 import { Journal } from './schemas/journal.schema';
 import { CreateJournalDto } from './dto/create-journal.dto';
 import { EmailMatchesUserGuard } from 'src/email-matches-user/email-matches-user.guard';
+import { HttpExceptionFilter } from 'src/filters/http-exception.filter';
 
 @Controller('journal')
+@UseFilters(HttpExceptionFilter)
 export class JournalController {
   constructor(private readonly journalService: JournalService) {}
 
