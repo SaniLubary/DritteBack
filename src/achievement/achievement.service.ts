@@ -8,6 +8,14 @@ import { UserService } from 'src/user/user.service';
 export type EmotionsTypes = 'angry' | 'sad' | 'neutral' | 'happy' | 'love';
 const emotions: EmotionsTypes[] = ['angry', 'sad', 'neutral', 'happy', 'love'];
 
+export interface AchievementWithUsersPercantage {
+  _id: ObjectId;
+  name: string;
+  description: string;
+  image: string;
+  usersPercentageWithSameAchievement: number;
+}
+
 @Injectable()
 export class AchievementService {
   constructor(
@@ -69,7 +77,12 @@ export class AchievementService {
       })),
     ];
 
-    await this.userService.update(user.email, user);
+    try {
+      await this.userService.update(user.email, user);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
 
     // Return not notified achievements of the user
     const achievements = [];
@@ -83,6 +96,47 @@ export class AchievementService {
     }
 
     return achievements;
+  }
+
+  async getAllUserAchievements(
+    email: string,
+  ): Promise<AchievementWithUsersPercantage[]> {
+    const user = await this.userService.findOne(email);
+    const userAchievements = user.achievements.map(
+      (achievement) => achievement.achievementId,
+    );
+    const achievements = await this.achievementModel
+      .find({ _id: { $in: userAchievements } })
+      .lean();
+
+    const achievementsWithUsersPercantage: AchievementWithUsersPercantage[] =
+      [];
+    const users = await this.userService.findAll();
+    for (let i = 0; i < achievements.length; i++) {
+      const achievement = achievements[i];
+
+      const usersWithSameAchievement = users.filter(
+        (u) =>
+          !!u.achievements.find((val) => {
+            return val.achievementId.toString() === achievement._id.toString();
+          }),
+      ).length;
+
+      achievementsWithUsersPercantage.push({
+        _id: achievement._id,
+        description: achievement.description,
+        name: achievement.name,
+        image: achievement.image,
+        usersPercentageWithSameAchievement:
+          (usersWithSameAchievement / users.length) * 100,
+      });
+    }
+
+    return achievementsWithUsersPercantage;
+  }
+
+  async getAllAchievements(): Promise<Achievement[]> {
+    return await this.achievementModel.find().lean();
   }
 
   async getAchievementById(_id: ObjectId): Promise<Achievement> {

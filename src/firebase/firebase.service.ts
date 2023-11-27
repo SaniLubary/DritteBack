@@ -7,22 +7,25 @@ export class FirebaseService {
 
   async sendNotificationToMultipleTokens(
     tokens: string[],
-    entryToSee,
+    options: {
+      screen: string;
+      entryToSee?: string;
+      notification: { title: string; body: string };
+    },
   ): Promise<boolean> {
+    console.log('Options => ', options);
     if (tokens.length < 500) {
       const message = {
         data: {
-          screenToOpen: 'ViewEntry',
-          entryToSee: `${entryToSee}`,
+          screenToOpen: options.screen,
+          entryToSee: options.entryToSee || '',
         },
         notification: {
-          title: 'Quieres revisar tu entrada?',
-          body: 'Ve la entrada que escribiste hace un rato!',
+          title: options.notification.title,
+          body: options.notification.body,
         },
         tokens,
       };
-
-      console.log(message);
 
       return getMessaging()
         .sendEachForMulticast(message)
@@ -36,7 +39,7 @@ export class FirebaseService {
             });
             console.log('List of tokens that caused failures: ' + failedTokens);
           }
-          console.log('Success.. kind of -> ', response);
+          console.log('Success -> ', response);
           return true;
         })
         .catch((error) => {

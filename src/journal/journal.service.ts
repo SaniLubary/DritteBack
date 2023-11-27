@@ -52,11 +52,29 @@ export class JournalService {
       });
   }
 
-  async findByHoursAgo(hoursAgo: Date): Promise<Journal[]> {
+  async findByHoursAgoUnreminded(hoursAgo: Date): Promise<Journal[]> {
     return await this.journalModel
       .find({
         createdAt: { $lt: hoursAgo },
         $or: [{ reminded: { $exists: false } }, { reminded: { $eq: false } }],
+      })
+      .lean()
+      .then((journals): Journal[] => {
+        const decryptedJournals = journals.map((journal: Journal): Journal => {
+          return this.decrypttJournal(journal);
+        });
+        return decryptedJournals;
+      })
+      .catch((error) => {
+        console.log('Error finding or decrypting Journals', error);
+        return [];
+      });
+  }
+
+  async findByHoursAgo(hoursAgo: Date): Promise<Journal[]> {
+    return await this.journalModel
+      .find({
+        createdAt: { $lt: hoursAgo },
       })
       .lean()
       .then((journals): Journal[] => {

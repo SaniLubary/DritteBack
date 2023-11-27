@@ -35,6 +35,18 @@ export class UserService {
     }
   }
 
+  async findAll(): Promise<User[]> {
+    try {
+      const user: User[] = await this.userModel
+        .find()
+        .populate('achievements')
+        .exec();
+      return user;
+    } catch (error) {
+      console.log('Error trying to get all users', error);
+    }
+  }
+
   async findById(_id: string): Promise<User> {
     try {
       const users: User[] = await this.userModel
@@ -54,7 +66,8 @@ export class UserService {
 
   async update(email: string, user: CreateUserDto): Promise<User> {
     if (typeof user.lenguagePreference !== 'string') {
-      user.lenguagePreference = user.lenguagePreference[0];
+      user.lenguagePreference =
+        user.lenguagePreference && user.lenguagePreference[0];
     }
 
     try {

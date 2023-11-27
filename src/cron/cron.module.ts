@@ -1,5 +1,5 @@
 import { JournalService } from 'src/journal/journal.service';
-import { SendRetrospectiveReminderService } from './send-retrospective-reminder.service';
+import { SendRemindersService } from './send-reminders.service';
 import { Module } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { FirebaseService } from 'src/firebase/firebase.service';
@@ -14,12 +14,12 @@ import { EncryptionService } from 'src/encryption/encryption.service';
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
   ],
   providers: [
-    SendRetrospectiveReminderService,
+    SendRemindersService,
     JournalService,
     UserService,
     FirebaseService,
     EncryptionService,
   ],
-  exports: [SendRetrospectiveReminderService],
+  exports: [SendRemindersService],
 })
 export class CronModule {}

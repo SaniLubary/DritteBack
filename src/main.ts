@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { networkInterfaces } from 'os';
 import { Logger } from '@nestjs/common';
-import { SendRetrospectiveReminderService } from './cron/send-retrospective-reminder.service';
+import { SendRemindersService } from './cron/send-reminders.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,11 +13,10 @@ async function bootstrap() {
     optionsSuccessStatus: 204,
   });
 
-  const sendRetrospectiveReminderServiceCron = app.get(
-    SendRetrospectiveReminderService,
-  );
+  const sendRemindersServiceCron = app.get(SendRemindersService);
 
-  sendRetrospectiveReminderServiceCron.checkEntries();
+  sendRemindersServiceCron.sendRetrospective();
+  sendRemindersServiceCron.sendNewEntryReminder();
 
   await app.listen(3000);
   new Logger('Network access address').log(

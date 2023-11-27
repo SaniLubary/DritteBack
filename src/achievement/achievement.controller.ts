@@ -22,6 +22,16 @@ export class AchievementController {
     return this.achievementService.getAchievements(email);
   }
 
+  @Get('/all-achieved')
+  getAllUserAchievements(@Param('email') email: string) {
+    return this.achievementService.getAllUserAchievements(email);
+  }
+
+  @Get('/all')
+  getAllAchievements() {
+    return this.achievementService.getAllAchievements();
+  }
+
   @Post('notify')
   setNotified(
     @Body() body: { achievementId: string },

@@ -5,7 +5,7 @@ import { UserModule } from './user/user.module';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { AuthModule } from './auth/auth.module';
 import { JournalModule } from './journal/journal.module';
-import { SendRetrospectiveReminderService } from './cron/send-retrospective-reminder.service';
+import { SendRemindersService } from './cron/send-reminders.service';
 import { ScheduleModule } from '@nestjs/schedule';
 import { FirebaseModule } from './firebase/firebase.module';
 import { CronModule } from './cron/cron.module';
@@ -33,7 +33,7 @@ import { AchievementModule } from './achievement/achievement.module';
     UserModule,
     CronModule,
   ],
-  providers: [SendRetrospectiveReminderService],
+  providers: [SendRemindersService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
