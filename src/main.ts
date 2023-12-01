@@ -19,6 +19,7 @@ async function bootstrap() {
   sendRemindersServiceCron.sendNewEntryReminder();
 
   await app.listen(3000);
+  new Logger('Network').log(networkInterfaces());
   new Logger('Network access address').log(
     networkInterfaces().en0
       ? networkInterfaces().en0[1].address
